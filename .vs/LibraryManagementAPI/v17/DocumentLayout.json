@@ -1,7 +1,88 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\models\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\models\\book.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\data\\seeddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\data\\seeddata.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Migrations\\20251117122724_Library.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:LibraryManagementAPI\\Migrations\\20251117122724_Library.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\controllers\\bookscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\controllers\\bookscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\data\\librarycontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\data\\librarycontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\models\\genre.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\models\\genre.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\controllers\\authorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\controllers\\authorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\repositories\\ibookrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\repositories\\ibookrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\repositories\\bookrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\repositories\\bookrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\repositories\\iauthorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\repositories\\iauthorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\repositories\\authorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\repositories\\authorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\models\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\models\\baseentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\models\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\models\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\repositories\\genrerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\repositories\\genrerepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\controllers\\genrecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\controllers\\genrecontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\dtos\\authordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\dtos\\authordto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\dtos\\bookdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\dtos\\bookdto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|c:\\users\\aolan\\source\\repos\\librarymanagementapi\\librarymanagementapi\\dtos\\genredto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{7600E133-E204-4DF6-8C45-38AB147DF3E8}|LibraryManagementAPI\\LibraryManagementAPI.csproj|solutionrelative:librarymanagementapi\\dtos\\genredto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -9,7 +90,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": -1,
+          "SelectedChildIndex": 17,
           "Children": [
             {
               "$type": "Bookmark",
@@ -58,6 +139,266 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "SeedData.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Data\\SeedData.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Data\\SeedData.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Data\\SeedData.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Data\\SeedData.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T12:11:01.562Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "20251117122724_Library.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Migrations\\20251117122724_Library.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Migrations\\20251117122724_Library.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Migrations\\20251117122724_Library.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Migrations\\20251117122724_Library.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T12:27:24.888Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "IBookRepository.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\IBookRepository.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Repositories\\IBookRepository.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\IBookRepository.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Repositories\\IBookRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:15:59.876Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "BooksController.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\BooksController.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Controllers\\BooksController.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\BooksController.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Controllers\\BooksController.cs",
+              "ViewState": "AgIAAGYAAAAAAAAAAAAIwIkAAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T10:16:32.476Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AuthorRepository.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\AuthorRepository.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Repositories\\AuthorRepository.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\AuthorRepository.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Repositories\\AuthorRepository.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAuwAYAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T12:35:49.161Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Book.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Book.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Models\\Book.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Book.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Models\\Book.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:18.208Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "LibraryContext.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Data\\LibraryContext.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Data\\LibraryContext.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Data\\LibraryContext.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Data\\LibraryContext.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAowDAAAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T11:42:25.006Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "BookRepository.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\BookRepository.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Repositories\\BookRepository.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\BookRepository.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Repositories\\BookRepository.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAswEoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T21:13:39.417Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AuthorsController.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\AuthorsController.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Controllers\\AuthorsController.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\AuthorsController.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Controllers\\AuthorsController.cs",
+              "ViewState": "AgIAADQAAAAAAAAAAAAUwEAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:57.873Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "Genre.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Genre.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Models\\Genre.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Genre.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Models\\Genre.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:06.652Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "BaseEntity.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\BaseEntity.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Models\\BaseEntity.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\BaseEntity.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Models\\BaseEntity.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:42.656Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "Author.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Author.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Models\\Author.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Models\\Author.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Models\\Author.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:38.504Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "IAuthorRepository.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\IAuthorRepository.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Repositories\\IAuthorRepository.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\IAuthorRepository.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Repositories\\IAuthorRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAArAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:26:39.959Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\appsettings.json",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\appsettings.json",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\appsettings.json",
+              "RelativeToolTip": "LibraryManagementAPI\\appsettings.json",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2025-11-17T09:45:27.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Program.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Program.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Program.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Program.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-17T09:11:02.362Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "GenreController.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\GenreController.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Controllers\\GenreController.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Controllers\\GenreController.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Controllers\\GenreController.cs",
+              "ViewState": "AgIAAC0AAAAAAAAAAAAIwCkAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T12:50:19.144Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "GenreRepository.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\GenreRepository.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\Repositories\\GenreRepository.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\Repositories\\GenreRepository.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\Repositories\\GenreRepository.cs",
+              "ViewState": "AgIAABIAAAAAAAAAAAAYwAsAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-14T12:37:06.88Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "AuthorDto.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\AuthorDto.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\DTOs\\AuthorDto.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\AuthorDto.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\DTOs\\AuthorDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:53:00.136Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "BookDto.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\BookDto.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\DTOs\\BookDto.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\BookDto.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\DTOs\\BookDto.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:29:03.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "GenreDto.cs",
+              "DocumentMoniker": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\GenreDto.cs",
+              "RelativeDocumentMoniker": "LibraryManagementAPI\\DTOs\\GenreDto.cs",
+              "ToolTip": "C:\\Users\\aolan\\source\\repos\\LibraryManagementAPI\\LibraryManagementAPI\\DTOs\\GenreDto.cs",
+              "RelativeToolTip": "LibraryManagementAPI\\DTOs\\GenreDto.cs",
+              "ViewState": "AgIAAAgAAAAAAAAAAAA3wAgAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-16T23:29:08.342Z",
+              "EditorCaption": ""
             }
           ]
         }

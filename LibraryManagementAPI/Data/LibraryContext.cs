@@ -1,85 +1,89 @@
-﻿using LibraryManagementAPI.Model;
+﻿using System.Data.Entity;
+using LibraryManagementAPI.Model;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Data
 
 {
-
-    public class LibraryContext : DbContext 
-    {
-        public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
-        public DbSet? Books { get; set; }
-        public DbSet? Authors { get; set; }
-        public DbSet? Genres { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public class LibraryContext : IdentityDbContext<Models.ApplicationUser>
         {
-            base.OnModelCreating(modelBuilder);
+            public LibraryContext(DbContextOptions<LibraryContext> options)
+                : base(options) { }
 
-            modelBuilder.Entity<Book>()
-                .HasOne(b => b.Author)
-                .WithMany(a => a.Books)
-                .HasForeignKey(b => b.AuthorId)
-                .OnDelete(DeleteBehavior.Restrict);
+            public DbSet? Books { get; set; }
+            public DbSet? Authors { get; set; }
+            public DbSet? Genres { get; set; }
 
-            modelBuilder.Entity<Book>()
-                .HasOne(b => b.Genre)
-                .WithMany(g => g.Books)
-                .HasForeignKey(b => b.GenreId)
-                .OnDelete(DeleteBehavior.Restrict);
+            protected override void OnModelCreating(ModelBuilder modelBuilder)
+            {
+                base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Book>()
-                .HasQueryFilter(b => !b.IsDeleted);
-            modelBuilder.Entity<Author>()
-                .HasQueryFilter(a => !a.IsDeleted);
-            modelBuilder.Entity<Genre>()
-                .HasQueryFilter(g => !g.IsDeleted);
+                modelBuilder.Entity<Book>()
+                    .HasOne(b => b.Author)
+                    .WithMany(a => a.Books)
+                    .HasForeignKey(b => b.AuthorId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-           
-            var genreId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-            var authorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+                modelBuilder.Entity<Book>()
+                    .HasOne(b => b.Genre)
+                    .WithMany(g => g.Books)
+                    .HasForeignKey(b => b.GenreId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
-            // Seed Genre
-            modelBuilder.Entity<Genre>().HasData(
-                new Genre
-                {
-                    Id = genreId,
-                    Name = "Fiction",
-                    Description = "Literary works",
-                    CreatedAt = DateTime.UtcNow,
-                    Title = "Title",
-                }
-            );
+                modelBuilder.Entity<Book>()
+                    .HasQueryFilter(b => !b.IsDeleted);
+                modelBuilder.Entity<Author>()
+                    .HasQueryFilter(a => !a.IsDeleted);
+                modelBuilder.Entity<Genre>()
+                    .HasQueryFilter(g => !g.IsDeleted);
 
-            // Seed Author
-            modelBuilder.Entity<Author>().HasData(
-                new Author
-                {
-                    Id = authorId,
-                    FirstName = "Adebayo",
-                    LastName = "Adeeyo",
-                    Bio = "novelist",
-                    DateOfBirth = new DateTime(1990, 6, 25),
-                    CreatedAt = DateTime.UtcNow
-                }
-            );
 
-            // Seed Book
-            modelBuilder.Entity<Book>().HasData(
-                new Book
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "1984",
-                    ISBN = "9780451524935",
-                    PublicationYear = 2025,
-                    AuthorId = authorId,
-                    GenreId = genreId,
-                    CreatedAt = DateTime.UtcNow,
-                    Description = "Description"
-                }
-            );
+                var genreId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+                var authorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+
+                // Seed Genre
+                modelBuilder.Entity<Genre>().HasData(
+                    new Genre
+                    {
+                        Id = genreId,
+                        Name = "Fiction",
+                        Description = "Literary works",
+                        CreatedAt = DateTime.UtcNow,
+                        Title = "Title",
+                    }
+                );
+
+                // Seed Author
+                modelBuilder.Entity<Author>().HasData(
+                    new Author
+                    {
+                        Id = authorId,
+                        FirstName = "Adebayo",
+                        LastName = "Adeeyo",
+                        Bio = "novelist",
+                        DateOfBirth = new DateTime(1990, 6, 25),
+                        CreatedAt = DateTime.UtcNow
+                    }
+                );
+
+                // Seed Book
+                modelBuilder.Entity<Book>().HasData(
+                    new Book
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = "1984",
+                        ISBN = "9780451524935",
+                        PublicationYear = 2025,
+                        AuthorId = authorId,
+                        GenreId = genreId,
+                        CreatedAt = DateTime.UtcNow,
+                        Description = "Description"
+                    }
+                );
+            }
         }
-    }
 }
 
     

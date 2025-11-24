@@ -1,165 +1,101 @@
-﻿using LibraryManagementAPI.DTOs;
+﻿
+using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Model;
 using LibraryManagementAPI.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class GenresController : ControllerBase
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
+    public class GenresController(IUnitOfWork unitOfWork) : ControllerBase
     {
-        private readonly IGenreRepository _genreRepository;
-        private readonly IBookRepository _bookRepository;
-
-        public GenresController(IGenreRepository genreRepository, IBookRepository bookRepository)
-        {
-            _genreRepository = genreRepository;
-            _bookRepository = bookRepository;
-        }
+        private readonly IUnitOfWork _unitOfWork = unitOfWork;
+        private object? created;
+        private object? genre; 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<GenreReadDto>>> GetGenres()
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<GenreReadDto>>), 200)]
+        public async Task<ActionResult<ApiResponse<IEnumerable<GenreReadDto>>>> GetGenres()
         {
-            var genres = await _genreRepository.GetAllAsync();
-            var genreDtos = genres.Select(g => MapToReadDto(g));
-            return Ok(genreDtos);
+            var genres = await _unitOfWork.Genres.GetAllWithBooksAsync();
+            var genreDtos = genres.Select(MapToDto);
+            return Ok(ApiResponse<IEnumerable<GenreReadDto>>.SuccessResponse(genreDtos));
         }
-
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GenreReadDto>> GetGenre(int id)
+        [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), 404)]
+        public async Task<ActionResult<ApiResponse<GenreReadDto>>> GetGenre(Guid id)
         {
-            var genre = await _genreRepository.GetByIdAsync(id);
+            await _unitOfWork.Genres.GetByIdWithBooksAsync(id);
             if (genre == null)
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
+                return NotFound(ApiResponse<GenreReadDto>.FailureResponse("Genre not found"));
 
-            return Ok(MapToReadDto(genre));
-        }
-
-
-
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<GenreReadDto>>> SearchGenres([FromQuery] string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-            {
-                return BadRequest(new { message = "Search term is required" });
-            }
-
-            var genres = await _genreRepository.SearchAsync(term);
-            var genreDtos = genres.Select(g => MapToReadDto(g));
-            return Ok(genreDtos);
-        }
-
-        [HttpGet("popular")]
-        public async Task<ActionResult<IEnumerable<GenreReadDto>>> GetPopularGenres([FromQuery] int count = 5)
-        {
-            if (count < 1)
-            {
-                return BadRequest(new { message = "Count must be greater than 0" });
-            }
-
-            var genres = await _genreRepository.GetPopularGenresAsync(count);
-            var genreDtos = genres.Select(g => MapToReadDto(g));
-            return Ok(genreDtos);
-        }
-
-        [HttpGet("with-books")]
-        public async Task<ActionResult<IEnumerable<GenreReadDto>>> GetGenresWithBooks()
-        {
-            var genres = await _genreRepository.GetGenresWithBooksAsync();
-            var genreDtos = genres.Select(g => MapToReadDto(g));
-            return Ok(genreDtos);
-        }
-
-        [HttpGet("{id}/book-count")]
-        public async Task<ActionResult<object>> GetGenreBookCount(int id)
-        {
-            if (!await _genreRepository.ExistsAsync(id))
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
-
-            var count = await _genreRepository.GetBookCountByGenreAsync(id);
-            return Ok(new { genreId = id, bookCount = count });
-        }
-
+            return Ok(ApiResponse<GenreReadDto>.SuccessResponse(MapToDto(genre)));
+        } 
 
         [HttpPost]
-        public async Task<ActionResult<GenreReadDto>> CreateGenre(GenreCreateUpdateDto genreDto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), 201)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<GenreReadDto>>> CreateGenre(GenreCreateUpdateDto genreDto)
         {
             var genre = new Genre
             {
-                Name = genreDto.Name,
-                Description = genreDto.Description
+                Name = (string)genreDto.Name,
+                Description = (string)genreDto.Description
             };
 
-            var createdGenre = await _genreRepository.AddAsync(genre);
-            var fullGenre = await _genreRepository.GetByIdAsync(createdGenre.Id);
+            await _unitOfWork.Genres.AddAsync(genre);
+            await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetGenre), new { id = fullGenre!.Id }, MapToReadDto(fullGenre));
+             await _unitOfWork.Genres.GetByIdWithBooksAsync(genre.Id);
+            return CreatedAtAction(nameof(GetGenre), new { id = genre.Id },
+                ApiResponse<GenreReadDto>.SuccessResponse(MapToDto(created!), "Genre created successfully"));
+        }
+
+        private GenreReadDto MapToDto(object value)
+        {
+            throw new NotImplementedException();
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateGenre(int id, GenreCreateUpdateDto genreDto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateGenre(Guid id, GenreCreateUpdateDto genreDto)
         {
-            if (!await _genreRepository.ExistsAsync(id))
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
+            var genre = await _unitOfWork.Genres.GetByIdAsync(id);
+            if (genre == null)
+                return NotFound(ApiResponse<object>.FailureResponse("Genre not found"));
 
-            var existingGenre = await _genreRepository.GetByIdAsync(id);
-            if (existingGenre == null)
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
+            genre.Name = (string)genreDto.Name;
+            genre.Description = (string)genreDto.Description;
 
-            existingGenre.Name = genreDto.Name;
-            existingGenre.Description = genreDto.Description;
+            await _unitOfWork.Genres.UpdateAsync(genre);
+            await _unitOfWork.SaveChangesAsync();
 
-            await _genreRepository.UpdateAsync(existingGenre);
-
-            return NoContent();
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Genre updated successfully"));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteGenre(int id)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteGenre(Guid id)
         {
-            var deleted = await _genreRepository.DeleteAsync(id);
-            if (!deleted)
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
+            if (!await _unitOfWork.Genres.ExistsAsync(id))
+                return NotFound(ApiResponse<object>.FailureResponse("Genre not found"));
 
-            return NoContent();
-        }
+            await _unitOfWork.Genres.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
 
-        [HttpDelete("{id}/soft")]
-        public async Task<IActionResult> SoftDeleteGenre(int id)
-        {
-            if (!await _genreRepository.ExistsAsync(id))
-            {
-                return NotFound(new { message = $"Genre with ID {id} not found" });
-            }
-
-            await _genreRepository.SoftDeleteAsync(id);
-            return NoContent();
-        }
-
-        private static GenreReadDto MapToReadDto(Genre genre)
-        {
-            return new GenreReadDto
-            {
-                Id = genre.Id,
-                Name = genre.Name,
-                Description = genre.Description,
-                BookCount = genre.Books?.Count ?? 0,
-                CreatedAt = genre.CreatedAt,
-                UpdatedAt = genre.UpdatedAt
-            };
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Genre deleted successfully"));
         }
 
     }

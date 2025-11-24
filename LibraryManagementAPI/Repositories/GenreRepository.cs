@@ -4,16 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Repositories
 {
-    public class GenreRepository : IGenreRepository
+    public class GenreRepository : GenericRepository<Genre>, IGenreRepository
     {
         private readonly LibraryContext _context;
         private readonly DbSet<Genre> _genres;
 
-        public GenreRepository(LibraryContext context)
+        public GenreRepository(LibraryContext context) : base(context)
         {
             _genres = context.Set<Genre>();
         }
-
+            
         public async Task<IEnumerable<Genre>> GetAllAsync()
         {
             return await _genres.Include(g => g.Books).ToListAsync();
@@ -46,7 +46,7 @@ namespace LibraryManagementAPI.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(Guid id)
         {
             var genre = await _genres.FindAsync(id);
             if (genre == null) return false;
@@ -55,8 +55,6 @@ namespace LibraryManagementAPI.Repositories
             await _context.SaveChangesAsync();
             return true;
         }
-
-
 
         public async Task<IEnumerable<Genre>> GetPopularGenresAsync(int topCount)
         {
@@ -76,7 +74,6 @@ namespace LibraryManagementAPI.Repositories
             return genre?.Books.Count ?? 0;
         }
 
-
         public async Task SoftDeleteAsync(Guid id)
         {
             var genre = await _genres.IgnoreQueryFilters()
@@ -89,9 +86,7 @@ namespace LibraryManagementAPI.Repositories
             }
         }
 
-
-
-        public Task<Genre?> GetByIdAsync(int id)
+        public Task<Genre?> GetAllWithBooksAsync(Guid id)
         {
             throw new NotImplementedException();
         }
@@ -101,27 +96,17 @@ namespace LibraryManagementAPI.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<Genre?> GetGenreWithBooksAsync(int genreId)
+        public Task<IEnumerable<object>> GetAllWithBooksAsync()
         {
             throw new NotImplementedException();
         }
 
-        public Task<int> GetBookCountByGenreAsync(int genreId)
+        public Task GetByIdWithBooksAsync(Guid id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<bool> ExistsAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SoftDeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task GetGenreWithBooksAsync(Guid id)
+        public Task<IEnumerable<object>> SearchGenresAsync(string term)
         {
             throw new NotImplementedException();
         }

@@ -1,31 +1,37 @@
-﻿using LibraryManagementAPI.Model;
+﻿using System.ComponentModel.DataAnnotations;
+using LibraryManagementAPI.Model;
 
 namespace LibraryManagementAPI.DTOs
 {
     public class BookCreateUpdateDto
     {
         internal Guid authorId;
-        internal Guid genreId;
+        internal int genreId;
 
+        [Required]
         public string Title { get; set; } = string.Empty;
+
+        [Required]
         public string ISBN { get; set; } = string.Empty;
+
+        [Required]
         public int PublicationYear { get; set; }
-        public int AuthorId { get; set; }
-        public int GenreId { get; set; }
+
+        [Required]
+        public Guid AuthorId { get; set; }
+
+        [Required]
+        public Guid GenreId { get; set; }
     }
 
     public class BookReadDto
     {
-        public Guid Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string ISBN { get; set; } = string.Empty;
         public int PublicationYear { get; set; }
-        public Guid AuthorId { get; set; }
         public string AuthorName { get; set; } = string.Empty;
-        public Guid GenreId { get; set; }
         public string GenreName { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
     }
-}   
+}
 

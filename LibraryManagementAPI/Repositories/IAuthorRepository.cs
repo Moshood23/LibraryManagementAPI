@@ -3,16 +3,13 @@ using LibraryManagementAPI.Model;
 
 namespace LibraryManagementAPI.Repositories
 {
-    public interface IAuthorRepository : IRepository
+    public interface IAuthorRepository : IGenericRepository<Author>
     {
+        Task<IEnumerable<Author>> GetAllWithBooksAsync();
         Task<IEnumerable<Author>> GetAuthorsWithBooksAsync();
         Task<Author?> GetAuthorWithBooksAsync(Guid authorId);
+        Task GetByIdWithBooksAsync(Guid id);
+        Task<IEnumerable<Author>> SearchAuthorsAsync(string searchTerm);
 
-        Task<Author> AddAsync(Author author);
-        Task<Author> UpdateAsync(Author author);
-        Task<bool> DeleteAsync(Guid id);
-        Task<IEnumerable<Author>> GetAllAsync();
-        Task<Author> GetByIdAsync(Guid id);
-        Task SoftDeleteAsync(Guid id);
-    }
+    }   
 }

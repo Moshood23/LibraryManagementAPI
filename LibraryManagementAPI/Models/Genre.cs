@@ -17,7 +17,9 @@ namespace LibraryManagementAPI.Model
         [StringLength(500)]
         public string Description { get; set; } = string.Empty;
 
-        public List <Book> Books { get; set; } = new List<Book>();
-        public string Title { get; internal set; }
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
+        public string? Title { get; internal set; }
+        public DateTime CreatedAt { get; internal set; }
+        public DateTime? UpdatedAt { get; internal set; }
     }
 }

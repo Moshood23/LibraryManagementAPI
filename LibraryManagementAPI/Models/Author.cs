@@ -21,7 +21,7 @@ namespace LibraryManagementAPI.Model
 
         public DateTime DateOfBirth { get; set; }
 
-        public List<Book> Books { get; set; } = new List<Book>();
-
+        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
+        public DateTime CreatedAt { get; internal set; }
     }
 }

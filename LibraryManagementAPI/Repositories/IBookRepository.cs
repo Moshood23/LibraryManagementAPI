@@ -4,18 +4,19 @@ using LibraryManagementAPI.Model;
 
 namespace LibraryManagementAPI.Repositories
 {
-    public interface IBookRepository
+    public interface IBookRepository : IGenericRepository<Book>
     {
-        Task<IEnumerable<Book>> GetAllAsync();
-        Task<Book?> GetByIdAsync(Guid id);
+        Task<IEnumerable<Book>> GetAllWithRelationsAsync();
+        Task<Book?> GetByIdWithRelationsAsync(Guid id);
         Task<IEnumerable<Book>> SearchBooksAsync(string searchTerm);
         Task<IEnumerable<Book>> GetBooksByAuthorAsync(Guid authorId);
         Task<IEnumerable<Book>> GetBooksByGenreAsync(Guid genreId);
         Task<(IEnumerable<Book> Books, int TotalCount)> GetPagedBooksAsync(int page, int pageSize);
-        Task<Book> AddAsync(Book book);
-        Task UpdateAsync(Book book);
+        Task<Book> AddWithRelationsAsync(Book book);
+        Task UpdateWithRelationsAsync(Book book);
         Task<bool> DeleteAsync(Guid id);
         Task<bool> ExistsAsync(Guid id);
-        Task SoftDeleteAsync(Guid id);
+        Task UpdateAsync(Book book);
+        Task<Book?> GetByIdAsync(Guid id);
     }
 }

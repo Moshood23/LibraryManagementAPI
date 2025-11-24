@@ -1,11 +1,12 @@
-﻿using LibraryManagementAPI.Data;
+﻿using System.Linq.Expressions;
+using LibraryManagementAPI.Data;
 using LibraryManagementAPI.Model;
 using LibraryManagementAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Repositories
 { }
-public class AuthorRepository : IAuthorRepository
+public class AuthorRepository : IGenericRepository<Author>, IAuthorRepository
 {
     private readonly LibraryContext _context;
     private readonly DbSet<Author> _authors;
@@ -70,6 +71,66 @@ public class AuthorRepository : IAuthorRepository
     }
 
     public Task<IEnumerable<Author>> GetAuthorsWithBooksAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Author>> FindAsync(Expression<Func<Author, bool>> predicate)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task IGenericRepository<Author>.UpdateAsync(Author entity)
+    {
+        return UpdateAsync(entity);
+    }
+
+    public Task DeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> ExistsAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task SoftDeleteAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Author>> GetAllWithBooksAsync()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GetByIdWithBooksAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task GetByIdWithBooksAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<IEnumerable<Author>> SearchAuthorsAsync(string searchTerm)
+    {
+        throw new NotImplementedException();
+    }
+
+    Task IGenericRepository<Author>.DeleteAsync(Guid id)
+    {
+        return DeleteAsync(id);
+    }
+
+    public Task<bool> ExistsAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<Author?> GetByIdAsync(int id)
     {
         throw new NotImplementedException();
     }

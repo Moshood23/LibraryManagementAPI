@@ -12,6 +12,4 @@ public class BaseEntity
     public bool IsDeleted { get; set; } = false;
 
     public DateTime DeletedAt { get; set; }
-    public DateTime CreatedAt { get; internal set; }
-    public DateTime UpdatedAt { get; internal set; }
 }

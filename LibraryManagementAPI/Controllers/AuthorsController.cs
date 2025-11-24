@@ -1,53 +1,53 @@
-﻿using LibraryManagementAPI.DTOs;
+﻿
+using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Model;
 using LibraryManagementAPI.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
 
+    [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class AuthorsController : ControllerBase
     {
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IBookRepository _bookRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private object author;
 
-        public AuthorsController(IAuthorRepository authorRepository, IBookRepository bookRepository)
+        public AuthorsController(IUnitOfWork unitOfWork)
         {
-            _authorRepository = authorRepository;
-            _bookRepository = bookRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorReadDto>>> GetAuthors()
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<AuthorReadDto>>), 200)]
+        public async Task<ActionResult<ApiResponse<IEnumerable<AuthorReadDto>>>> GetAuthors()
         {
-            var authors = await _authorRepository.GetAllAsync();
-            var authorDtos = authors.Select(a => MapToReadDto(a));
-            return Ok(authorDtos);
-        }
-
-        private object MapToReadDto(Author a)
-        {
-            throw new NotImplementedException();
+            var authors = await _unitOfWork.Authors.GetAllWithBooksAsync();
+            var authorDtos = authors.Select(MapToDto);
+            return Ok(ApiResponse<IEnumerable<AuthorReadDto>>.SuccessResponse(authorDtos));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AuthorReadDto>> GetAuthor(Guid id)
+        [ProducesResponseType(typeof(ApiResponse<AuthorReadDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<AuthorReadDto>), 404)]
+        public async Task<ActionResult<ApiResponse<AuthorReadDto>>> GetAuthor(Guid id)
         {
-            var author = await _authorRepository.GetByIdAsync(id);
+             await _unitOfWork.Authors.GetByIdWithBooksAsync(id);
             if (author == null)
-            {
-                return NotFound(new { message = $"Author with ID {id} not found" });
-            }
+                return NotFound(ApiResponse<AuthorReadDto>.FailureResponse("Author not found"));
 
-            return Ok(MapToReadDto(author));
+            return Ok(ApiResponse<AuthorReadDto>.SuccessResponse(MapToDto(author)));
         }
 
 
         [HttpPost]
-        public async Task<ActionResult<AuthorReadDto>> CreateAuthor(AuthorCreateUpdateDto authorDto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<AuthorReadDto>), 201)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<AuthorReadDto>>> CreateAuthor(AuthorCreateUpdateDto authorDto)
         {
             var author = new Author
             {
@@ -57,38 +57,57 @@ namespace LibraryManagementAPI.Controllers
                 DateOfBirth = authorDto.DateOfBirth
             };
 
-            var createdAuthor = await _authorRepository.AddAsync(author);
-            var fullAuthor = await _authorRepository.GetByIdAsync(createdAuthor.Id);
+            await _unitOfWork.Authors.AddAsync(author);
+            await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetAuthor), new { id = fullAuthor!.Id }, MapToReadDto(fullAuthor));
+            await _unitOfWork.Authors.GetByIdWithBooksAsync(author.Id);
+            object created = null;
+            return CreatedAtAction(nameof(GetAuthor), new { id = author.Id },
+                ApiResponse<AuthorReadDto>.SuccessResponse(MapToDto(created!), "Author created successfully"));
         }
 
-      
+        private AuthorReadDto MapToDto(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateAuthor(Guid id, AuthorCreateUpdateDto authorDto)
+        {
+            var author = await _unitOfWork.Authors.GetByIdAsync(id);
+            if (author == null)
+                return NotFound(ApiResponse<object>.FailureResponse("Author not found"));
+
+            author.FirstName = authorDto.FirstName;
+            author.LastName = authorDto.LastName;
+            author.Bio = authorDto.Bio;
+            author.DateOfBirth = authorDto.DateOfBirth;
+
+            await _unitOfWork.Authors.UpdateAsync(author);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Author updated successfully"));
+        }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAuthor(Guid id)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteAuthor(Guid id)
         {
-            var deleted = await _authorRepository.DeleteAsync(id);
-            if (!deleted)
-            {
-                return NotFound(new { message = $"Author with ID {id} not found" });
-            }
+            if (!await _unitOfWork.Authors.ExistsAsync(id))
+                return NotFound(ApiResponse<object>.FailureResponse("Author not found"));
 
-            return NoContent();
+            await _unitOfWork.Authors.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Author deleted successfully"));
         }
 
-
-        private static AuthorReadDto FromAuthor(Author author)
-        {
-            return new AuthorReadDto
-            {
-                Id = author.Id,
-                FirstName = author.FirstName,
-                LastName = author.LastName,
-                Bio = author.Bio,
-                DateOfBirth = author.DateOfBirth,
-                BookCount = author.Books?.Count ?? 0
-            };
-        }
     }
 }

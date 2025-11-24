@@ -8,8 +8,8 @@ namespace LibraryManagementAPI.Model
     {
 
         [Required(ErrorMessage = "Title is required")]
-        [StringLength(15)] 
-        public string Title { get; set; } = string .Empty;
+        [StringLength(15)]
+        public string Title { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "ISBN is  required")]
         [StringLength(15)]
@@ -21,8 +21,12 @@ namespace LibraryManagementAPI.Model
         public Guid AuthorId { get; set; }
         public Guid GenreId { get; set; }
 
-        public Author Author { get; set; } = null!;
-        public Genre Genre { get; set; } = null!;
+        public virtual Author Author { get; set; } = null!;
+        public virtual Genre Genre { get; set; } = null!;
         public string Description { get; set; } = null!;
+        public DateTime CreatedAt { get; internal set; }
+
+       
     }
 }
+       

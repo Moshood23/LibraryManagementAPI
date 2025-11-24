@@ -1,138 +1,116 @@
-﻿using System.Collections;
+﻿
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Model;
+using LibraryManagementAPI.Models;
 using LibraryManagementAPI.Repositories;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiVersion("1.0")]
     public class BooksController : ControllerBase
     {
-        private readonly IBookRepository _bookRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public BooksController(IBookRepository bookRepository)
+        public BooksController(IUnitOfWork unitOfWork)
         {
-            _bookRepository = bookRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable>> GetBooksAsync()
+        [ProducesResponseType(typeof(ApiResponse<IEnumerable<BookReadDto>>), 200)]
+        public async Task<ActionResult<ApiResponse<IEnumerable<BookReadDto>>>> GetBooks()
         {
-            var books = await _bookRepository.GetAllAsync();
-            var bookDtos = books.Select(b => MapToReadDto(b));
-            return Ok(bookDtos);
+            var books = await _unitOfWork.Books.GetAllWithRelationsAsync();
+            var bookDtos = books.Select(MapToDto);
+            return Ok(ApiResponse<IEnumerable<BookReadDto>>.SuccessResponse(bookDtos));
         }
 
-        private object MapToReadDto(Book b)
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(ApiResponse<BookReadDto>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<BookReadDto>), 404)]
+        public async Task<ActionResult<ApiResponse<BookReadDto>>> GetBook(Guid id)
+        {
+            var book = await _unitOfWork.Books.GetByIdWithRelationsAsync(id);
+            if (book == null)
+                return NotFound(ApiResponse<BookReadDto>.FailureResponse("Book not found"));
+
+            return Ok(ApiResponse<BookReadDto>.SuccessResponse(MapToDto(book)));
+        }
+
+        private BookReadDto MapToDto(Book book)
         {
             throw new NotImplementedException();
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BookReadDto>> GetBook(Guid id)
-        {
-            var book = await _bookRepository.GetByIdAsync(id);
-            if (book == null)
-                return NotFound(new { message = $"Book with ID {id} not found" });
-
-            return Ok(MapToDto(book));
-        }
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<BookReadDto>>> SearchBooks([FromQuery] string term)
-        {
-            if (string.IsNullOrWhiteSpace(term))
-                return BadRequest(new { message = "Search term is required" });
-
-            var books = await _bookRepository.SearchBooksAsync(term);
-            return Ok(books.Select(MapToDto));
-        }
-        [HttpGet("author/{authorId}")]
-        public async Task<ActionResult<IEnumerable<BookReadDto>>> GetBooksByAuthor(Guid authorId)
-        {
-            var books = await _bookRepository.GetBooksByAuthorAsync(authorId);
-            return Ok(books.Select(MapToDto));
-        }
-
-        [HttpGet("paged")]
-        public async Task<ActionResult> GetPagedBooks([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
-        {
-            if (page < 1 || pageSize < 1)
-                return BadRequest(new { message = "Page and pageSize must be greater than 0" });
-
-            var (books, totalCount) = await _bookRepository.GetPagedBooksAsync(page, pageSize);
-
-            return Ok(new
-            {
-                books = books.Select(MapToDto),
-                currentPage = page,
-                pageSize,
-                totalCount,
-                totalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
-            });
-        }
         [HttpPost]
-
-        public async Task<ActionResult<BookReadDto>> CreateBook(BookCreateUpdateDto bookDto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<BookReadDto>), 201)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<BookReadDto>>> CreateBook(BookCreateUpdateDto bookDto)
         {
             var book = new Book
             {
                 Title = bookDto.Title,
                 ISBN = bookDto.ISBN,
                 PublicationYear = bookDto.PublicationYear,
-                AuthorId = bookDto.authorId,
-                GenreId = bookDto.genreId
+                AuthorId = bookDto.AuthorId,
+                GenreId = bookDto.GenreId
             };
 
-            var created = await _bookRepository.AddAsync(book);
-            var fullBook = await _bookRepository.GetByIdAsync(created.Id);
+            await _unitOfWork.Books.AddAsync(book);
+            await _unitOfWork.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetBook), new { id = fullBook!.Id }, MapToDto(fullBook));
+            var created = await _unitOfWork.Books.GetByIdWithRelationsAsync(book.Id);
+            return CreatedAtAction(nameof(GetBook), new { id = book.Id },
+                ApiResponse<BookReadDto>.SuccessResponse(MapToDto(created!), "Book created successfully"));
         }
+
+
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(Guid id, BookCreateUpdateDto bookDto)
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> UpdateBook(Guid id, BookCreateUpdateDto bookDto)
         {
-            var existing = await _bookRepository.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound(new { message = $"Book with ID {id} not found" });
+            var book = await _unitOfWork.Books.GetByIdAsync(id);
+            if (book == null)
+                return NotFound(ApiResponse<object>.FailureResponse("Book not found"));
 
-            existing.Title = bookDto.Title;
-            existing.ISBN = bookDto.ISBN;
-            existing.PublicationYear = bookDto.PublicationYear;
-            existing.AuthorId = bookDto.authorId;
-            existing.GenreId = bookDto.genreId;
+            book.Title = bookDto.Title;
+            book.ISBN = bookDto.ISBN;
+            book.PublicationYear = bookDto.PublicationYear;
+            book.AuthorId = bookDto.AuthorId;
+            book.GenreId = bookDto.GenreId;
 
-            await _bookRepository.UpdateAsync(existing);
-            return NoContent();
+            await _unitOfWork.Books.UpdateAsync(book);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Book updated successfully"));
         }
 
-        [HttpDelete("{id}/soft")]
-        public async Task<IActionResult> SoftDeleteBook(Guid id)
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(typeof(ApiResponse<object>), 200)]
+        [ProducesResponseType(typeof(ApiResponse<object>), 404)]
+        [ProducesResponseType(403)]
+        public async Task<ActionResult<ApiResponse<object>>> DeleteBook(Guid id)
         {
-            if (!await _bookRepository.ExistsAsync(id))
-                return NotFound(new { message = $"Book with ID {id} not found" });
+            if (!await _unitOfWork.Books.ExistsAsync(id))
+                return NotFound(ApiResponse<object>.FailureResponse("Book not found"));
 
-            await _bookRepository.SoftDeleteAsync(id);
-            return NoContent();
+            await _unitOfWork.Books.DeleteAsync(id);
+            await _unitOfWork.SaveChangesAsync();
+
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Book deleted successfully"));
         }
-        private static BookReadDto MapToDto(Book book)
-        {
-            return new()
-            {
-                Id = book.Id,
-                Title = book.Title,
-                ISBN = book.ISBN,
-                PublicationYear = book.PublicationYear,
-                AuthorName = $"{book.Author.FirstName} {book.Author.LastName}",
-                GenreName = book.Genre.Name
 
-
-
-            };
-        }
+       
     }
-}
 
-    
+}

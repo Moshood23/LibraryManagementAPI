@@ -1,49 +1,42 @@
-﻿
+using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
-using LibraryManagementAPI.Repository;
 using LibraryManagementAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using static LibraryManagementAPI.DTOs.AuthDto;
 
-namespace LibraryManagementAPI.Controllers
+namespace LibraryManagementAPI.Controllers;
+
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/[controller]")]
+public class AuthController : ControllerBase
 {
-    
-    [ApiController]
-    [Route("api/v{version:apiVersion}/[controller]")]
-    public class AuthController : ControllerBase
+    private readonly IAuthService _authService;
+
+    public AuthController(IAuthService authService) => _authService = authService;
+
+    /// <summary>Registers a new user with the "User" role and returns a JWT.</summary>
+    [HttpPost("register")]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Register(RegisterDto model)
     {
-        private readonly IAuthService _authService;
+        var result = await _authService.RegisterAsync(model);
+        if (!result.Succeeded)
+            return BadRequest(ApiResponse<AuthResponseDto>.FailureResponse("Registration failed", result.Errors));
 
-        public AuthController(IAuthService authService)
-        {
-            _authService = authService;
-        }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result.Response, "User registered successfully"));
+    }
 
-        [HttpPost("register")]
-        [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), 400)]
-        public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Register(RegisterDto model)
-        {
-            var result = await _authService.RegisterAsync(model);
+    /// <summary>Signs in with email and password and returns a JWT.</summary>
+    [HttpPost("login")]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto model)
+    {
+        var result = await _authService.LoginAsync(model);
+        if (result is null)
+            return Unauthorized(ApiResponse<AuthResponseDto>.FailureResponse("Invalid email or password"));
 
-            if (result == null)
-                return BadRequest(ApiResponse<AuthResponseDto>.FailureResponse("Registration failed"));
-
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "User registered successfully"));
-        }
-
-       
-        [HttpPost("login")]
-        [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), 200)]
-        [ProducesResponseType(typeof(ApiResponse<AuthResponseDto>), 401)]
-        public async Task<ActionResult<ApiResponse<AuthResponseDto>>> Login(LoginDto model)
-        {
-            var result = await _authService.LoginAsync(model);
-
-            if (result == null)
-                return Unauthorized(ApiResponse<AuthResponseDto>.FailureResponse("Invalid credentials"));
-
-            return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Login successful"));
-        }
+        return Ok(ApiResponse<AuthResponseDto>.SuccessResponse(result, "Login successful"));
     }
 }

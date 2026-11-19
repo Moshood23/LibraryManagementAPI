@@ -1,15 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace LibraryManagementAPI.Model;
+namespace LibraryManagementAPI.Models;
 
-public class BaseEntity
+public abstract class BaseEntity
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();
-    public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedOn { get; set; } = DateTime.UtcNow;
 
-    public bool IsDeleted { get; set; } = false;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedAt { get; set; }
 
-    public DateTime DeletedAt { get; set; }
+    public bool IsDeleted { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

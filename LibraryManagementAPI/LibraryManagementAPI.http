@@ -1,6 +1,24 @@
-@LibraryManagementAPI_HostAddress = http://localhost:5277
+@host = http://localhost:5277
+@token = paste-token-from-login-here
 
-GET {{LibraryManagementAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+### Log in as the seeded admin (Development only)
+POST {{host}}/api/v1/Auth/login
+Content-Type: application/json
 
-###
+{ "email": "admin@library.com", "password": "Admin@123" }
+
+### List books
+GET {{host}}/api/v1/Books?page=1&pageSize=20
+
+### Search books
+GET {{host}}/api/v1/Books/search?term=1984
+
+### List genres
+GET {{host}}/api/v1/Genres
+
+### Create a genre (admin)
+POST {{host}}/api/v1/Genres
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "name": "Science Fiction", "description": "Speculative fiction" }

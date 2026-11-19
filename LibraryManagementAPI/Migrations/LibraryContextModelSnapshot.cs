@@ -153,6 +153,10 @@ namespace LibraryManagementAPI.Migrations
                     b.Property<Guid>("AuthorId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("AvailableCopies")
+                        .IsConcurrencyToken()
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -183,6 +187,9 @@ namespace LibraryManagementAPI.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<int>("TotalCopies")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -196,20 +203,25 @@ namespace LibraryManagementAPI.Migrations
                         .IsUnique()
                         .HasFilter("[IsDeleted] = 0");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", t =>
+                        {
+                            t.HasCheckConstraint("CK_Books_Copies", "[TotalCopies] >= 0 AND [AvailableCopies] >= 0 AND [AvailableCopies] <= [TotalCopies]");
+                        });
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             AuthorId = new Guid("22222222-2222-2222-2222-222222222222"),
+                            AvailableCopies = 3,
                             CreatedAt = new DateTime(2025, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "A dystopian novel.",
                             GenreId = new Guid("11111111-1111-1111-1111-111111111111"),
                             ISBN = "9780451524935",
                             IsDeleted = false,
                             PublicationYear = 1949,
-                            Title = "1984"
+                            Title = "1984",
+                            TotalCopies = 3
                         });
                 });
 
@@ -258,6 +270,51 @@ namespace LibraryManagementAPI.Migrations
                             IsDeleted = false,
                             Name = "Fiction"
                         });
+                });
+
+            modelBuilder.Entity("LibraryManagementAPI.Models.Loan", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("BookId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("BorrowedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DueAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ReturnedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DueAt");
+
+                    b.HasIndex("BookId", "ReturnedAt");
+
+                    b.HasIndex("UserId", "ReturnedAt");
+
+                    b.ToTable("Loans");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -412,6 +469,25 @@ namespace LibraryManagementAPI.Migrations
                     b.Navigation("Genre");
                 });
 
+            modelBuilder.Entity("LibraryManagementAPI.Models.Loan", b =>
+                {
+                    b.HasOne("LibraryManagementAPI.Models.Book", "Book")
+                        .WithMany("Loans")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LibraryManagementAPI.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -466,6 +542,11 @@ namespace LibraryManagementAPI.Migrations
             modelBuilder.Entity("LibraryManagementAPI.Models.Author", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("LibraryManagementAPI.Models.Book", b =>
+                {
+                    b.Navigation("Loans");
                 });
 
             modelBuilder.Entity("LibraryManagementAPI.Models.Genre", b =>

@@ -16,11 +16,15 @@ public class UnitOfWork : IUnitOfWork
         Books = new BookRepository(context);
         Authors = new AuthorRepository(context);
         Genres = new GenreRepository(context);
+        Loans = new LoanRepository(context);
     }
 
     public IBookRepository Books { get; }
     public IAuthorRepository Authors { get; }
     public IGenreRepository Genres { get; }
+    public ILoanRepository Loans { get; }
 
     public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
+
+    public void ClearChanges() => _context.ChangeTracker.Clear();
 }

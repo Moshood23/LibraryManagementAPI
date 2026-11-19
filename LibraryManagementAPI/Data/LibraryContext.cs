@@ -15,6 +15,7 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
     public DbSet<Book> Books => Set<Book>();
     public DbSet<Author> Authors => Set<Author>();
     public DbSet<Genre> Genres => Set<Genre>();
+    public DbSet<Loan> Loans => Set<Loan>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,22 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
             // Unique among live books; a soft-deleted book doesn't block re-adding the same ISBN.
             b.HasIndex(x => x.ISBN).IsUnique().HasFilter("[IsDeleted] = 0");
             b.HasQueryFilter(x => !x.IsDeleted);
+
+            // Two people borrowing the last copy at the same moment: the second save fails
+            // with a concurrency error instead of driving the count below zero.
+            b.Property(x => x.AvailableCopies).IsConcurrencyToken();
+            b.ToTable(t => t.HasCheckConstraint(
+                "CK_Books_Copies", "[TotalCopies] >= 0 AND [AvailableCopies] >= 0 AND [AvailableCopies] <= [TotalCopies]"));
+        });
+
+        modelBuilder.Entity<Loan>(l =>
+        {
+            l.HasOne(x => x.Book).WithMany(b => b.Loans).HasForeignKey(x => x.BookId).OnDelete(DeleteBehavior.Restrict);
+            l.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+            l.HasIndex(x => new { x.UserId, x.ReturnedAt });
+            l.HasIndex(x => new { x.BookId, x.ReturnedAt });
+            l.HasIndex(x => x.DueAt);
+            l.HasQueryFilter(x => !x.IsDeleted);
         });
 
         modelBuilder.Entity<Author>().HasQueryFilter(a => !a.IsDeleted);
@@ -66,6 +83,8 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
             Description = "A dystopian novel.",
             AuthorId = SeedAuthorId,
             GenreId = SeedGenreId,
+            TotalCopies = 3,
+            AvailableCopies = 3,
             CreatedAt = seededAt
         });
     }

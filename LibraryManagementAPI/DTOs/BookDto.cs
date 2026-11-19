@@ -19,6 +19,10 @@ public class BookCreateUpdateDto
     [StringLength(2000)]
     public string Description { get; set; } = string.Empty;
 
+    /// <summary>How many physical copies the library owns.</summary>
+    [Range(0, 1000)]
+    public int TotalCopies { get; set; } = 1;
+
     [Required]
     public Guid AuthorId { get; set; }
 
@@ -37,6 +41,8 @@ public class BookReadDto
     public string AuthorName { get; set; } = string.Empty;
     public Guid GenreId { get; set; }
     public string GenreName { get; set; } = string.Empty;
+    public int TotalCopies { get; set; }
+    public int AvailableCopies { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
 }

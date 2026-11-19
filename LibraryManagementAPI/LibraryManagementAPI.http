@@ -22,3 +22,20 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 { "name": "Science Fiction", "description": "Speculative fiction" }
+
+### Borrow the seeded book "1984" (any signed-in user)
+POST {{host}}/api/v1/Books/33333333-3333-3333-3333-333333333333/borrow
+Authorization: Bearer {{token}}
+
+### My loans
+GET {{host}}/api/v1/Loans/me
+Authorization: Bearer {{token}}
+
+### Return a loan (replace the id)
+POST {{host}}/api/v1/Loans/00000000-0000-0000-0000-000000000000/return
+Authorization: Bearer {{token}}
+
+### Overdue loans (admin)
+GET {{host}}/api/v1/Loans/overdue
+Authorization: Bearer {{token}}
+

@@ -9,7 +9,7 @@ public class Book : BaseEntity
     public string Title { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "ISBN is required")]
-    [StringLength(20)]
+    [StringLength(13)]
     public string ISBN { get; set; } = string.Empty;
 
     [Range(1000, 2100, ErrorMessage = "Publication year must be between 1000 and 2100")]

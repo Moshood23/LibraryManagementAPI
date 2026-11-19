@@ -37,6 +37,16 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 
 Deletes are soft deletes. Authors and genres that still have books can't be deleted (409).
 
+### Rules and errors
+
+- **ISBN** must be a valid ISBN-10 or ISBN-13 (check digit verified). Hyphens and spaces are accepted and stripped before saving.
+- **ISBNs are unique** among active books, and **genre names are unique** (case-insensitive). Duplicates return 409.
+- **Every error uses the same shape**, including validation failures, 401, 403 and unexpected server errors:
+
+```json
+{ "success": false, "message": "Validation failed", "data": null, "errors": ["ISBN: ISBN must be a valid ISBN-10 or ISBN-13."] }
+```
+
 ## Tests
 
 ```bash

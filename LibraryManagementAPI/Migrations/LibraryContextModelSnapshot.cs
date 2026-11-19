@@ -169,8 +169,8 @@ namespace LibraryManagementAPI.Migrations
 
                     b.Property<string>("ISBN")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
@@ -192,7 +192,9 @@ namespace LibraryManagementAPI.Migrations
 
                     b.HasIndex("GenreId");
 
-                    b.HasIndex("ISBN");
+                    b.HasIndex("ISBN")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Books");
 
@@ -240,6 +242,10 @@ namespace LibraryManagementAPI.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasFilter("[IsDeleted] = 0");
 
                     b.ToTable("Genres");
 

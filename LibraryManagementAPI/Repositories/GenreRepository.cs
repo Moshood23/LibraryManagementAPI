@@ -31,4 +31,10 @@ public class GenreRepository : GenericRepository<Genre>, IGenreRepository
 
     public async Task<bool> HasBooksAsync(Guid id) =>
         await _context.Books.AnyAsync(b => b.GenreId == id);
+
+    public async Task<bool> NameExistsAsync(string name, Guid? excludeGenreId = null)
+    {
+        var lowered = name.Trim().ToLower();
+        return await _dbSet.AnyAsync(g => g.Name.ToLower() == lowered && g.Id != excludeGenreId);
+    }
 }

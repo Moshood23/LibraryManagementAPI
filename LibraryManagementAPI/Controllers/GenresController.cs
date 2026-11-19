@@ -62,10 +62,14 @@ public class GenresController : ControllerBase
     [HttpPost]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<GenreReadDto>>> CreateGenre(GenreCreateUpdateDto genreDto)
     {
+        if (await _unitOfWork.Genres.NameExistsAsync(genreDto.Name))
+            return Conflict(ApiResponse<GenreReadDto>.FailureResponse("A genre with this name already exists"));
+
         var genre = new Genre { Name = genreDto.Name.Trim(), Description = genreDto.Description };
 
         await _unitOfWork.Genres.AddAsync(genre);
@@ -79,6 +83,7 @@ public class GenresController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<GenreReadDto>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<GenreReadDto>>> UpdateGenre(Guid id, GenreCreateUpdateDto genreDto)
@@ -86,6 +91,9 @@ public class GenresController : ControllerBase
         var genre = await _unitOfWork.Genres.GetByIdWithBooksAsync(id);
         if (genre is null)
             return NotFound(ApiResponse<GenreReadDto>.FailureResponse("Genre not found"));
+
+        if (await _unitOfWork.Genres.NameExistsAsync(genreDto.Name, id))
+            return Conflict(ApiResponse<GenreReadDto>.FailureResponse("A genre with this name already exists"));
 
         genre.Name = genreDto.Name.Trim();
         genre.Description = genreDto.Description;

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using LibraryManagementAPI.Validation;
 
 namespace LibraryManagementAPI.DTOs;
 
@@ -9,7 +10,7 @@ public class BookCreateUpdateDto
     public string Title { get; set; } = string.Empty;
 
     [Required]
-    [StringLength(20)]
+    [Isbn]
     public string ISBN { get; set; } = string.Empty;
 
     [Range(1000, 2100, ErrorMessage = "Publication year must be between 1000 and 2100")]

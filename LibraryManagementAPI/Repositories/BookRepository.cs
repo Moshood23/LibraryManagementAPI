@@ -44,4 +44,7 @@ public class BookRepository : GenericRepository<Book>, IBookRepository
             .ToListAsync();
         return (books, total);
     }
+
+    public async Task<bool> IsbnExistsAsync(string isbn, Guid? excludeBookId = null) =>
+        await _dbSet.AnyAsync(b => b.ISBN == isbn && b.Id != excludeBookId);
 }

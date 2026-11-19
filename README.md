@@ -1,5 +1,7 @@
 # Library Management API
 
+[![CI](https://github.com/Moshood23/LibraryManagementAPI/actions/workflows/ci.yml/badge.svg?branch=Master)](https://github.com/Moshood23/LibraryManagementAPI/actions/workflows/ci.yml)
+
 ASP.NET Core 8 Web API for managing books, authors and genres, with ASP.NET Identity and JWT authentication.
 
 ## Run locally
@@ -42,3 +44,7 @@ dotnet test
 ```
 
 The integration tests run the whole API against an in-memory database, so no SQL Server is needed.
+
+## Continuous integration
+
+`.github/workflows/ci.yml` restores, builds (warnings fail the build) and runs the tests on every push and pull request to `Master` and `Development`. Test results are uploaded as a `test-results` artifact on each run.

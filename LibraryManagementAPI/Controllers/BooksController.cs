@@ -1,10 +1,13 @@
 using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Models;
+using System.Security.Claims;
 using LibraryManagementAPI.Repositories;
+using LibraryManagementAPI.Services;
 using LibraryManagementAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementAPI.Controllers;
 
@@ -15,8 +18,13 @@ public class BooksController : ControllerBase
 {
     private const int MaxPageSize = 100;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ILoanService _loans;
 
-    public BooksController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
+    public BooksController(IUnitOfWork unitOfWork, ILoanService loans)
+    {
+        _unitOfWork = unitOfWork;
+        _loans = loans;
+    }
 
     /// <summary>Lists books, one page at a time.</summary>
     [HttpGet]
@@ -81,6 +89,8 @@ public class BooksController : ControllerBase
 
         var book = new Book();
         Apply(bookDto, book);
+        book.TotalCopies = bookDto.TotalCopies;
+        book.AvailableCopies = bookDto.TotalCopies;
 
         await _unitOfWork.Books.AddAsync(book);
         await _unitOfWork.SaveChangesAsync();
@@ -111,27 +121,64 @@ public class BooksController : ControllerBase
         if (await _unitOfWork.Books.IsbnExistsAsync(Isbn.Normalize(bookDto.ISBN), id))
             return Conflict(ApiResponse<BookReadDto>.FailureResponse("A book with this ISBN already exists"));
 
+        var onLoan = book.TotalCopies - book.AvailableCopies;
+        if (bookDto.TotalCopies < onLoan)
+            return BadRequest(ApiResponse<BookReadDto>.FailureResponse(
+                $"{onLoan} copies are on loan, so TotalCopies can't be lower than {onLoan}."));
+
         Apply(bookDto, book);
-        await _unitOfWork.SaveChangesAsync();
+        book.TotalCopies = bookDto.TotalCopies;
+        book.AvailableCopies = bookDto.TotalCopies - onLoan;
+
+        try
+        {
+            await _unitOfWork.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Conflict(ApiResponse<BookReadDto>.FailureResponse(
+                "The book was borrowed or returned while you were editing it. Reload and try again."));
+        }
 
         var updated = await _unitOfWork.Books.GetByIdWithRelationsAsync(id);
         return Ok(ApiResponse<BookReadDto>.SuccessResponse(updated!.ToReadDto(), "Book updated successfully"));
     }
 
-    /// <summary>Soft-deletes a book.</summary>
+    /// <summary>Soft-deletes a book. Fails with 409 while copies are on loan.</summary>
     [HttpDelete("{id:guid}")]
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<object>>> DeleteBook(Guid id)
     {
+        if (await _unitOfWork.Loans.BookHasActiveLoansAsync(id))
+            return Conflict(ApiResponse<object>.FailureResponse("Copies of this book are still on loan. Wait until they are returned."));
+
         if (!await _unitOfWork.Books.SoftDeleteAsync(id))
             return NotFound(ApiResponse<object>.FailureResponse("Book not found"));
 
         await _unitOfWork.SaveChangesAsync();
         return Ok(ApiResponse<object>.SuccessResponse(null, "Book deleted successfully"));
+    }
+
+    /// <summary>Borrows one copy of this book for the signed-in user.</summary>
+    [HttpPost("{id:guid}/borrow")]
+    [Authorize]
+    [ProducesResponseType(typeof(ApiResponse<LoanReadDto>), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ApiResponse<LoanReadDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<LoanReadDto>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<ApiResponse<LoanReadDto>>> BorrowBook(Guid id)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+        var result = await _loans.BorrowAsync(id, userId);
+        if (!result.Succeeded) return this.ToErrorResult(result);
+
+        return CreatedAtAction(nameof(LoansController.GetLoan), "Loans", new { id = result.Value!.Id, version = "1.0" },
+            ApiResponse<LoanReadDto>.SuccessResponse(result.Value, result.Message));
     }
 
     private async Task<List<string>> ValidateRelationsAsync(BookCreateUpdateDto dto)

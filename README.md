@@ -34,8 +34,19 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 | GET | `/api/v1/Authors`, `/api/v1/Authors/{id}`, `/api/v1/Authors/search?term=` | – |
 | GET | `/api/v1/Genres`, `/api/v1/Genres/{id}`, `/api/v1/Genres/search?term=`, `/api/v1/Genres/popular?top=` | – |
 | POST / PUT / DELETE | `/api/v1/Books`, `/api/v1/Authors`, `/api/v1/Genres` | Admin |
+| POST | `/api/v1/Books/{id}/borrow` | Signed in |
+| GET | `/api/v1/Loans/me?includeReturned=`, `/api/v1/Loans/{id}` | Signed in (own loans) |
+| POST | `/api/v1/Loans/{id}/return` | Signed in (own loans), Admin (any) |
+| GET | `/api/v1/Loans?status=Active\|Overdue\|Returned\|All`, `/api/v1/Loans/overdue` | Admin |
 
 Deletes are soft deletes. Authors and genres that still have books can't be deleted (409).
+
+### Lending rules
+
+- Each book has `TotalCopies` (set by admins) and `AvailableCopies` (copies on the shelf).
+- A loan lasts `Loans:LoanPeriodDays` (default 14). A member can have at most `Loans:MaxActiveLoansPerUser` (default 5) books out, can't borrow the same book twice at once, and can't borrow anything while they have an overdue book.
+- Borrowing the last copy at the same moment as someone else is safe: only one succeeds, the other gets 409.
+- A book with copies on loan can't be deleted, and its `TotalCopies` can't be set below the number on loan.
 
 ### Rules and errors
 

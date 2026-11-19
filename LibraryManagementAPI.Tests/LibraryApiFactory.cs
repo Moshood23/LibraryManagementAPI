@@ -15,12 +15,20 @@ public class LibraryApiFactory : WebApplicationFactory<Program>
 
     private readonly string _dbName = $"library-tests-{Guid.NewGuid()}";
 
+    /// <summary>The app's clock. Tests can move it forward to make loans overdue.</summary>
+    public TestClock Clock { get; } = new();
+
+    /// <summary>Kept low so the limit is quick to hit in tests.</summary>
+    public const int MaxActiveLoansPerUser = 3;
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
         builder.UseSetting("JWT:Secret", "test-secret-key-that-is-at-least-32-bytes-long!");
         builder.UseSetting("SeedAdmin:Email", AdminEmail);
         builder.UseSetting("SeedAdmin:Password", AdminPassword);
+        builder.UseSetting("Loans:LoanPeriodDays", "14");
+        builder.UseSetting("Loans:MaxActiveLoansPerUser", MaxActiveLoansPerUser.ToString());
 
         builder.ConfigureServices(services =>
         {
@@ -34,6 +42,17 @@ public class LibraryApiFactory : WebApplicationFactory<Program>
                 services.Remove(d);
 
             services.AddDbContext<LibraryContext>(o => o.UseInMemoryDatabase(_dbName));
+            services.AddSingleton<TimeProvider>(Clock);
         });
     }
+}
+
+/// <summary>A clock that starts at the real time and only moves when a test advances it.</summary>
+public class TestClock : TimeProvider
+{
+    private DateTimeOffset _now = DateTimeOffset.UtcNow;
+
+    public override DateTimeOffset GetUtcNow() => _now;
+
+    public void Advance(TimeSpan by) => _now = _now.Add(by);
 }

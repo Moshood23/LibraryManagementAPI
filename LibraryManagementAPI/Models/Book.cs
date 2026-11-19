@@ -23,4 +23,13 @@ public class Book : BaseEntity
 
     public Guid GenreId { get; set; }
     public Genre Genre { get; set; } = null!;
+
+    /// <summary>How many physical copies the library owns.</summary>
+    [Range(0, 1000)]
+    public int TotalCopies { get; set; } = 1;
+
+    /// <summary>Copies on the shelf right now (TotalCopies minus copies on loan).</summary>
+    public int AvailableCopies { get; set; } = 1;
+
+    public ICollection<Loan> Loans { get; set; } = new List<Loan>();
 }

@@ -15,6 +15,8 @@ public static class MappingExtensions
         AuthorName = book.Author is null ? string.Empty : $"{book.Author.FirstName} {book.Author.LastName}",
         GenreId = book.GenreId,
         GenreName = book.Genre?.Name ?? string.Empty,
+        TotalCopies = book.TotalCopies,
+        AvailableCopies = book.AvailableCopies,
         CreatedAt = book.CreatedAt,
         UpdatedAt = book.UpdatedAt
     };

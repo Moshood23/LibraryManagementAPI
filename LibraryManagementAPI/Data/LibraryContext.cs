@@ -1,89 +1,80 @@
-﻿using System.Data.Entity;
-using LibraryManagementAPI.Model;
-using Microsoft.AspNetCore.Identity;
+using LibraryManagementAPI.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace LibraryManagementAPI.Data
+namespace LibraryManagementAPI.Data;
 
+public class LibraryContext : IdentityDbContext<ApplicationUser>
 {
-        public class LibraryContext : IdentityDbContext<Models.ApplicationUser>
+    public static readonly Guid SeedGenreId = Guid.Parse("11111111-1111-1111-1111-111111111111");
+    public static readonly Guid SeedAuthorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
+    public static readonly Guid SeedBookId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+
+    public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
+
+    public DbSet<Book> Books => Set<Book>();
+    public DbSet<Author> Authors => Set<Author>();
+    public DbSet<Genre> Genres => Set<Genre>();
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Book>(b =>
         {
-            public LibraryContext(DbContextOptions<LibraryContext> options)
-                : base(options) { }
+            b.HasOne(x => x.Author).WithMany(a => a.Books).HasForeignKey(x => x.AuthorId).OnDelete(DeleteBehavior.Restrict);
+            b.HasOne(x => x.Genre).WithMany(g => g.Books).HasForeignKey(x => x.GenreId).OnDelete(DeleteBehavior.Restrict);
+            b.HasIndex(x => x.ISBN);
+            b.HasQueryFilter(x => !x.IsDeleted);
+        });
 
-            public DbSet? Books { get; set; }
-            public DbSet? Authors { get; set; }
-            public DbSet? Genres { get; set; }
+        modelBuilder.Entity<Author>().HasQueryFilter(a => !a.IsDeleted);
+        modelBuilder.Entity<Genre>().HasQueryFilter(g => !g.IsDeleted);
 
-            protected override void OnModelCreating(ModelBuilder modelBuilder)
-            {
-                base.OnModelCreating(modelBuilder);
+        // Seed data must use fixed values so EF doesn't see a model change on every build.
+        var seededAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
-                modelBuilder.Entity<Book>()
-                    .HasOne(b => b.Author)
-                    .WithMany(a => a.Books)
-                    .HasForeignKey(b => b.AuthorId)
-                    .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Genre>().HasData(new Genre
+        {
+            Id = SeedGenreId,
+            Name = "Fiction",
+            Description = "Literary works",
+            CreatedAt = seededAt
+        });
 
-                modelBuilder.Entity<Book>()
-                    .HasOne(b => b.Genre)
-                    .WithMany(g => g.Books)
-                    .HasForeignKey(b => b.GenreId)
-                    .OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Author>().HasData(new Author
+        {
+            Id = SeedAuthorId,
+            FirstName = "Adebayo",
+            LastName = "Adeeyo",
+            Bio = "Novelist",
+            DateOfBirth = new DateTime(1990, 6, 25, 0, 0, 0, DateTimeKind.Utc),
+            CreatedAt = seededAt
+        });
 
-                modelBuilder.Entity<Book>()
-                    .HasQueryFilter(b => !b.IsDeleted);
-                modelBuilder.Entity<Author>()
-                    .HasQueryFilter(a => !a.IsDeleted);
-                modelBuilder.Entity<Genre>()
-                    .HasQueryFilter(g => !g.IsDeleted);
+        modelBuilder.Entity<Book>().HasData(new Book
+        {
+            Id = SeedBookId,
+            Title = "1984",
+            ISBN = "9780451524935",
+            PublicationYear = 1949,
+            Description = "A dystopian novel.",
+            AuthorId = SeedAuthorId,
+            GenreId = SeedGenreId,
+            CreatedAt = seededAt
+        });
+    }
 
-
-                var genreId = Guid.Parse("11111111-1111-1111-1111-111111111111");
-                var authorId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-
-                // Seed Genre
-                modelBuilder.Entity<Genre>().HasData(
-                    new Genre
-                    {
-                        Id = genreId,
-                        Name = "Fiction",
-                        Description = "Literary works",
-                        CreatedAt = DateTime.UtcNow,
-                        Title = "Title",
-                    }
-                );
-
-                // Seed Author
-                modelBuilder.Entity<Author>().HasData(
-                    new Author
-                    {
-                        Id = authorId,
-                        FirstName = "Adebayo",
-                        LastName = "Adeeyo",
-                        Bio = "novelist",
-                        DateOfBirth = new DateTime(1990, 6, 25),
-                        CreatedAt = DateTime.UtcNow
-                    }
-                );
-
-                // Seed Book
-                modelBuilder.Entity<Book>().HasData(
-                    new Book
-                    {
-                        Id = Guid.NewGuid(),
-                        Title = "1984",
-                        ISBN = "9780451524935",
-                        PublicationYear = 2025,
-                        AuthorId = authorId,
-                        GenreId = genreId,
-                        CreatedAt = DateTime.UtcNow,
-                        Description = "Description"
-                    }
-                );
-            }
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        var now = DateTime.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        {
+            if (entry.State == EntityState.Added)
+                entry.Entity.CreatedAt = now;
+            else if (entry.State == EntityState.Modified)
+                entry.Entity.UpdatedAt = now;
         }
+        return base.SaveChangesAsync(cancellationToken);
+    }
 }
-
-    

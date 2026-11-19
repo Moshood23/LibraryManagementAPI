@@ -1,11 +1,9 @@
-﻿using LibraryManagementAPI.DTOs;
-using static LibraryManagementAPI.DTOs.AuthDto;
+using LibraryManagementAPI.DTOs;
 
-namespace LibraryManagementAPI.Services
+namespace LibraryManagementAPI.Services;
+
+public interface IAuthService
 {
-    public interface IAuthService
-    {
-        Task<AuthResponseDto?> RegisterAsync(RegisterDto model);
-        Task<AuthResponseDto?> LoginAsync(LoginDto model);
-    }
+    Task<AuthResult> RegisterAsync(RegisterDto model);
+    Task<AuthResponseDto?> LoginAsync(LoginDto model);
 }

@@ -1,30 +1,26 @@
-﻿using LibraryManagementAPI.Data;
+using LibraryManagementAPI.Data;
 
-namespace LibraryManagementAPI.Repositories
+namespace LibraryManagementAPI.Repositories;
+
+/// <summary>
+/// Groups the repositories over one scoped <see cref="LibraryContext"/>.
+/// The DI container owns the context's lifetime, so this class does not dispose it.
+/// </summary>
+public class UnitOfWork : IUnitOfWork
 {
-    public class UnitOfWork : IUnitOfWork
+    private readonly LibraryContext _context;
+
+    public UnitOfWork(LibraryContext context)
     {
-        private readonly LibraryContext _context;
-        public IBookRepository Books { get; private set; }
-        public IAuthorRepository Authors { get; private set; }
-        public IGenreRepository Genres { get; private set; }
-
-        public UnitOfWork(LibraryContext context)
-        {
-            _context = context;
-            Books = new BookRepository(_context);
-            Authors = new AuthorRepository(_context);
-            Genres = new GenreRepository(_context);
-        }
-
-        public async Task<int> SaveChangesAsync()
-        {
-            return await _context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            _context.Dispose();
-        }
+        _context = context;
+        Books = new BookRepository(context);
+        Authors = new AuthorRepository(context);
+        Genres = new GenreRepository(context);
     }
+
+    public IBookRepository Books { get; }
+    public IAuthorRepository Authors { get; }
+    public IGenreRepository Genres { get; }
+
+    public Task<int> SaveChangesAsync() => _context.SaveChangesAsync();
 }

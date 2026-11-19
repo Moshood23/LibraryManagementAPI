@@ -1,15 +1,12 @@
-﻿using LibraryManagementAPI.Model;
+using LibraryManagementAPI.Models;
 
-namespace LibraryManagementAPI.Repositories
+namespace LibraryManagementAPI.Repositories;
+
+public interface IGenreRepository : IGenericRepository<Genre>
 {
-    public interface IGenreRepository : IGenericRepository<Genre>
-    {
-        Task<IEnumerable<Genre>> GetAllAsync();
-        Task<Genre?> GetAllWithBooksAsync(Guid id);
-        Task<IEnumerable<object>> GetAllWithBooksAsync();
-        Task<Genre> GetByIdAsync(Guid id);
-        Task GetByIdWithBooksAsync(Guid id);
-        Task<IEnumerable<Genre>> GetGenresWithBooksAsync();
-        Task<IEnumerable<object>> SearchGenresAsync(string term);
-    }
+    Task<IEnumerable<Genre>> GetAllWithBooksAsync();
+    Task<Genre?> GetByIdWithBooksAsync(Guid id);
+    Task<IEnumerable<Genre>> SearchGenresAsync(string term);
+    Task<IEnumerable<Genre>> GetPopularGenresAsync(int topCount);
+    Task<bool> HasBooksAsync(Guid id);
 }

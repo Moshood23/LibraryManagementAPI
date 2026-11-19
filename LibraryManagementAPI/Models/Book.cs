@@ -1,32 +1,26 @@
-﻿using System.ComponentModel.DataAnnotations;
-using LibraryManagementAPI.Model;
-using Microsoft.Data.SqlClient;
+using System.ComponentModel.DataAnnotations;
 
-namespace LibraryManagementAPI.Model
+namespace LibraryManagementAPI.Models;
+
+public class Book : BaseEntity
 {
-    public class Book : BaseEntity
-    {
+    [Required(ErrorMessage = "Title is required")]
+    [StringLength(200)]
+    public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Title is required")]
-        [StringLength(15)]
-        public string Title { get; set; } = string.Empty;
+    [Required(ErrorMessage = "ISBN is required")]
+    [StringLength(20)]
+    public string ISBN { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "ISBN is  required")]
-        [StringLength(15)]
-        public string ISBN { get; set; } = string.Empty;
+    [Range(1000, 2100, ErrorMessage = "Publication year must be between 1000 and 2100")]
+    public int PublicationYear { get; set; }
 
-        [Range(500, 700, ErrorMessage = "Publication year must be between 500 and 700")]
-        public int PublicationYear { get; set; }
+    [StringLength(2000)]
+    public string Description { get; set; } = string.Empty;
 
-        public Guid AuthorId { get; set; }
-        public Guid GenreId { get; set; }
+    public Guid AuthorId { get; set; }
+    public Author Author { get; set; } = null!;
 
-        public virtual Author Author { get; set; } = null!;
-        public virtual Genre Genre { get; set; } = null!;
-        public string Description { get; set; } = null!;
-        public DateTime CreatedAt { get; internal set; }
-
-       
-    }
+    public Guid GenreId { get; set; }
+    public Genre Genre { get; set; } = null!;
 }
-       

@@ -1,27 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using LibraryManagementAPI.Model;
 
-namespace LibraryManagementAPI.Model
+namespace LibraryManagementAPI.Models;
+
+public class Author : BaseEntity
 {
-    public class Author : BaseEntity
-    {
+    [Required(ErrorMessage = "First name is required")]
+    [StringLength(100)]
+    public string FirstName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "First name is required")]
-        [StringLength(20)]
-        public string FirstName { get; set; } = string.Empty;
+    [Required(ErrorMessage = "Last name is required")]
+    [StringLength(100)]
+    public string LastName { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Last name is required")]
-        [StringLength(20)]
-        public string LastName { get; set; } = string.Empty;
+    [StringLength(2000)]
+    public string Bio { get; set; } = string.Empty;
 
-        [StringLength(50)]
-        public string Bio { get; set; } = string.Empty;
+    public DateTime DateOfBirth { get; set; }
 
-        public DateTime DateOfBirth { get; set; }
-
-        public virtual ICollection<Book> Books { get; set; } = new List<Book>();
-        public DateTime CreatedAt { get; internal set; }
-    }
+    public ICollection<Book> Books { get; set; } = new List<Book>();
 }

@@ -10,4 +10,5 @@ public interface IBookRepository : IGenericRepository<Book>
     Task<IEnumerable<Book>> GetBooksByAuthorAsync(Guid authorId);
     Task<IEnumerable<Book>> GetBooksByGenreAsync(Guid genreId);
     Task<(IEnumerable<Book> Books, int TotalCount)> GetPagedBooksAsync(int page, int pageSize);
+    Task<bool> IsbnExistsAsync(string isbn, Guid? excludeBookId = null);
 }

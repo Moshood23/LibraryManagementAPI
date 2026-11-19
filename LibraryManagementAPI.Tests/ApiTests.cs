@@ -144,7 +144,7 @@ public class ApiTests : IClassFixture<LibraryApiFactory>
         var response = await client.PostAsJsonAsync("/api/v1/Books", new BookCreateUpdateDto
         {
             Title = "Ghost",
-            ISBN = "123",
+            ISBN = "978-0-306-40615-7",
             PublicationYear = 2000,
             AuthorId = Guid.NewGuid(),
             GenreId = LibraryContext.SeedGenreId
@@ -161,7 +161,7 @@ public class ApiTests : IClassFixture<LibraryApiFactory>
         var response = await client.PostAsJsonAsync("/api/v1/Books", new BookCreateUpdateDto
         {
             Title = "Too old",
-            ISBN = "123",
+            ISBN = "0-306-40615-2",
             PublicationYear = 500,
             AuthorId = LibraryContext.SeedAuthorId,
             GenreId = LibraryContext.SeedGenreId

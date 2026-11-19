@@ -24,12 +24,17 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
         {
             b.HasOne(x => x.Author).WithMany(a => a.Books).HasForeignKey(x => x.AuthorId).OnDelete(DeleteBehavior.Restrict);
             b.HasOne(x => x.Genre).WithMany(g => g.Books).HasForeignKey(x => x.GenreId).OnDelete(DeleteBehavior.Restrict);
-            b.HasIndex(x => x.ISBN);
+            // Unique among live books; a soft-deleted book doesn't block re-adding the same ISBN.
+            b.HasIndex(x => x.ISBN).IsUnique().HasFilter("[IsDeleted] = 0");
             b.HasQueryFilter(x => !x.IsDeleted);
         });
 
         modelBuilder.Entity<Author>().HasQueryFilter(a => !a.IsDeleted);
-        modelBuilder.Entity<Genre>().HasQueryFilter(g => !g.IsDeleted);
+        modelBuilder.Entity<Genre>(g =>
+        {
+            g.HasIndex(x => x.Name).IsUnique().HasFilter("[IsDeleted] = 0");
+            g.HasQueryFilter(x => !x.IsDeleted);
+        });
 
         // Seed data must use fixed values so EF doesn't see a model change on every build.
         var seededAt = new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc);

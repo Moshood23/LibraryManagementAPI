@@ -1,11 +1,14 @@
 using System.Text;
 using Asp.Versioning;
 using LibraryManagementAPI.Data;
+using LibraryManagementAPI.DTOs;
+using LibraryManagementAPI.Infrastructure;
 using LibraryManagementAPI.Models;
 using LibraryManagementAPI.Repositories;
 using LibraryManagementAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -20,7 +23,23 @@ if (string.IsNullOrWhiteSpace(jwtSecret) || Encoding.UTF8.GetByteCount(jwtSecret
         "'dotnet user-secrets set \"JWT:Secret\" \"<value>\"' or the JWT__Secret environment variable.");
 }
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // Return model validation failures in the same ApiResponse shape as every other error.
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(e => e.Value?.Errors.Count > 0)
+                .SelectMany(e => e.Value!.Errors.Select(err =>
+                    string.IsNullOrEmpty(e.Key) ? err.ErrorMessage : $"{e.Key}: {err.ErrorMessage}"))
+                .ToList();
+            return new BadRequestObjectResult(ApiResponse<object>.FailureResponse("Validation failed", errors));
+        };
+    });
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<LibraryContext>(options =>
@@ -58,6 +77,24 @@ builder.Services.AddAuthentication(options =>
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
         ClockSkew = TimeSpan.FromMinutes(1)
+    };
+
+    // Return 401/403 in the standard ApiResponse shape instead of an empty body.
+    options.Events = new JwtBearerEvents
+    {
+        OnChallenge = async context =>
+        {
+            context.HandleResponse();
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            await context.Response.WriteAsJsonAsync(
+                ApiResponse<object>.FailureResponse("Authentication required. Log in and send the token as a Bearer header."));
+        },
+        OnForbidden = async context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            await context.Response.WriteAsJsonAsync(
+                ApiResponse<object>.FailureResponse("You do not have permission to perform this action."));
+        }
     };
 });
 
@@ -116,6 +153,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
 await SeedAsync(app);
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {

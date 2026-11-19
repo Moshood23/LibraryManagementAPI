@@ -2,6 +2,7 @@ using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Models;
 using LibraryManagementAPI.Repositories;
+using LibraryManagementAPI.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -66,6 +67,7 @@ public class BooksController : ControllerBase
     [Authorize(Roles = Roles.Admin)]
     [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<BookReadDto>>> CreateBook(BookCreateUpdateDto bookDto)
@@ -73,6 +75,9 @@ public class BooksController : ControllerBase
         var errors = await ValidateRelationsAsync(bookDto);
         if (errors.Count > 0)
             return BadRequest(ApiResponse<BookReadDto>.FailureResponse("Invalid book", errors));
+
+        if (await _unitOfWork.Books.IsbnExistsAsync(Isbn.Normalize(bookDto.ISBN)))
+            return Conflict(ApiResponse<BookReadDto>.FailureResponse("A book with this ISBN already exists"));
 
         var book = new Book();
         Apply(bookDto, book);
@@ -90,6 +95,7 @@ public class BooksController : ControllerBase
     [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<BookReadDto>), StatusCodes.Status409Conflict)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<ActionResult<ApiResponse<BookReadDto>>> UpdateBook(Guid id, BookCreateUpdateDto bookDto)
@@ -101,6 +107,9 @@ public class BooksController : ControllerBase
         var errors = await ValidateRelationsAsync(bookDto);
         if (errors.Count > 0)
             return BadRequest(ApiResponse<BookReadDto>.FailureResponse("Invalid book", errors));
+
+        if (await _unitOfWork.Books.IsbnExistsAsync(Isbn.Normalize(bookDto.ISBN), id))
+            return Conflict(ApiResponse<BookReadDto>.FailureResponse("A book with this ISBN already exists"));
 
         Apply(bookDto, book);
         await _unitOfWork.SaveChangesAsync();
@@ -138,7 +147,7 @@ public class BooksController : ControllerBase
     private static void Apply(BookCreateUpdateDto dto, Book book)
     {
         book.Title = dto.Title.Trim();
-        book.ISBN = dto.ISBN.Trim();
+        book.ISBN = Isbn.Normalize(dto.ISBN);
         book.PublicationYear = dto.PublicationYear;
         book.Description = dto.Description;
         book.AuthorId = dto.AuthorId;

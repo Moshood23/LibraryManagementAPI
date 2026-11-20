@@ -27,10 +27,22 @@ public class LoginDto
     public string Password { get; set; } = string.Empty;
 }
 
+public class RefreshTokenRequestDto
+{
+    [Required]
+    public string RefreshToken { get; set; } = string.Empty;
+}
+
 public class AuthResponseDto
 {
+    /// <summary>Access token (JWT). Send it as "Authorization: Bearer ...".</summary>
     public string Token { get; set; } = string.Empty;
     public DateTime ExpiresAt { get; set; }
+
+    /// <summary>Single-use token for POST /auth/refresh. Store it securely.</summary>
+    public string RefreshToken { get; set; } = string.Empty;
+    public DateTime RefreshTokenExpiresAt { get; set; }
+
     public string Email { get; set; } = string.Empty;
     public string FullName { get; set; } = string.Empty;
     public List<string> Roles { get; set; } = new();
@@ -44,4 +56,5 @@ public class AuthResult
 
     public static AuthResult Success(AuthResponseDto response) => new() { Succeeded = true, Response = response };
     public static AuthResult Failure(IEnumerable<string> errors) => new() { Errors = errors.ToList() };
+    public static AuthResult Failure(string error) => Failure(new[] { error });
 }

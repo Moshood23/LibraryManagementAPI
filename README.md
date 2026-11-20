@@ -29,7 +29,7 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 
 | Method | Route | Auth |
 | --- | --- | --- |
-| POST | `/api/v1/Auth/register`, `/api/v1/Auth/login` | – |
+| POST | `/api/v1/Auth/register`, `/api/v1/Auth/login`, `/api/v1/Auth/refresh`, `/api/v1/Auth/logout` | – (rate limited) |
 | GET | `/api/v1/Books` (filters below), `/api/v1/Books/{id}`, `/api/v1/Books/search?term=` | – |
 | GET | `/api/v1/Authors` (paged), `/api/v1/Authors/{id}`, `/api/v1/Authors/search?term=` | – |
 | GET | `/api/v1/Genres` (paged), `/api/v1/Genres/{id}`, `/api/v1/Genres/search?term=`, `/api/v1/Genres/popular?top=` | – |
@@ -38,8 +38,21 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 | GET | `/api/v1/Loans/me?includeReturned=`, `/api/v1/Loans/{id}` | Signed in (own loans) |
 | POST | `/api/v1/Loans/{id}/return` | Signed in (own loans), Admin (any) |
 | GET | `/api/v1/Loans?status=Active\|Overdue\|Returned\|All`, `/api/v1/Loans/overdue` | Admin |
+| GET | `/api/v1/Users?search=&page=&pageSize=`, `/api/v1/Users/{id}` | Admin |
+| PUT | `/api/v1/Users/{id}/roles` | Admin |
+| POST | `/api/v1/Users/{id}/lock`, `/api/v1/Users/{id}/unlock` | Admin |
 
 Deletes are soft deletes. Authors and genres that still have books can't be deleted (409).
+
+### Signing in and security
+
+- **Login and register** return an access token (`token`, valid for `JWT:ExpiryHours`, default 3) and a **refresh token** (valid for `JWT:RefreshTokenDays`, default 7).
+- **`POST /api/v1/Auth/refresh`** with `{ "refreshToken": "..." }` returns a new pair. Each refresh token works **once**; presenting a used one again is treated as theft and signs that user out everywhere.
+- **`POST /api/v1/Auth/logout`** with `{ "refreshToken": "..." }` revokes it.
+- **Account lockout:** 5 wrong passwords in a row lock the account for 15 minutes.
+- **Rate limiting:** login, register, refresh and logout allow `RateLimiting:AuthPermitLimit` requests (default 10) per `RateLimiting:AuthWindowSeconds` (default 60) per client IP; more returns 429 with a `Retry-After` header. Behind a reverse proxy, configure forwarded headers so the real client IP is used.
+- **User administration (admins):** list and search users, set roles (`PUT /api/v1/Users/{id}/roles` with `{ "roles": ["User", "Admin"] }`), lock and unlock accounts. Admins can't remove their own Admin role, remove the last Admin, or lock themselves. Role changes apply from the user's next login or refresh; locking also revokes their refresh tokens (an access token they already hold keeps working until it expires).
+- **CORS:** only origins listed in `Cors:AllowedOrigins` may call the API from a browser. Development allows `http://localhost:3000` and `http://localhost:5173`; production allows none until you add them.
 
 ### Browsing: filters, sorting and paging
 

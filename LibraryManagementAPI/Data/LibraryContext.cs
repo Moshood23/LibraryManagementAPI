@@ -16,6 +16,7 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
     public DbSet<Author> Authors => Set<Author>();
     public DbSet<Genre> Genres => Set<Genre>();
     public DbSet<Loan> Loans => Set<Loan>();
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +45,16 @@ public class LibraryContext : IdentityDbContext<ApplicationUser>
             l.HasIndex(x => new { x.BookId, x.ReturnedAt });
             l.HasIndex(x => x.DueAt);
             l.HasQueryFilter(x => !x.IsDeleted);
+        });
+
+        modelBuilder.Entity<RefreshToken>(t =>
+        {
+            t.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+            t.Property(x => x.TokenHash).HasMaxLength(64).IsRequired();
+            t.HasIndex(x => x.TokenHash).IsUnique();
+            t.HasIndex(x => new { x.UserId, x.RevokedAt });
+            // Two refreshes with the same token at the same moment: only the first save succeeds.
+            t.Property(x => x.RevokedAt).IsConcurrencyToken();
         });
 
         modelBuilder.Entity<Author>().HasQueryFilter(a => !a.IsDeleted);

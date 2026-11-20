@@ -21,6 +21,8 @@ public class LibraryApiFactory : WebApplicationFactory<Program>
     /// <summary>Kept low so the limit is quick to hit in tests.</summary>
     public const int MaxActiveLoansPerUser = 3;
 
+    public const string AllowedOrigin = "https://app.example.test";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
@@ -29,6 +31,9 @@ public class LibraryApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("SeedAdmin:Password", AdminPassword);
         builder.UseSetting("Loans:LoanPeriodDays", "14");
         builder.UseSetting("Loans:MaxActiveLoansPerUser", MaxActiveLoansPerUser.ToString());
+        // Tests log in constantly from the same (empty) IP, so lift the limit; RateLimitingTests lowers it again.
+        builder.UseSetting("RateLimiting:AuthPermitLimit", "100000");
+        builder.UseSetting("Cors:AllowedOrigins:0", AllowedOrigin);
 
         builder.ConfigureServices(services =>
         {

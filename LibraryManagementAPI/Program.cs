@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Asp.Versioning;
 using LibraryManagementAPI.Data;
 using LibraryManagementAPI.DTOs;
@@ -55,6 +56,11 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
+
+    // Lock an account for 15 minutes after 5 wrong passwords in a row.
+    options.Lockout.AllowedForNewUsers = true;
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
 })
 .AddEntityFrameworkStores<LibraryContext>()
 .AddDefaultTokenProviders();
@@ -158,6 +164,41 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserAdminService, UserAdminService>();
+
+// Rate limit login/register/refresh per client IP to slow down password guessing.
+// Behind a reverse proxy, also configure forwarded headers so the real client IP is used.
+var rateLimits = builder.Configuration.GetSection(RateLimitingOptions.SectionName).Get<RateLimitingOptions>() ?? new();
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddPolicy(RateLimitingOptions.AuthPolicy, context =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions
+            {
+                PermitLimit = rateLimits.AuthPermitLimit,
+                Window = TimeSpan.FromSeconds(rateLimits.AuthWindowSeconds),
+                QueueLimit = 0
+            }));
+
+    options.OnRejected = async (context, cancellationToken) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        if (context.Lease.TryGetMetadata(MetadataName.RetryAfter, out var retryAfter))
+            context.HttpContext.Response.Headers.RetryAfter = ((int)Math.Ceiling(retryAfter.TotalSeconds)).ToString();
+        await context.HttpContext.Response.WriteAsJsonAsync(
+            ApiResponse<object>.FailureResponse("Too many attempts. Please wait a minute and try again."), cancellationToken);
+    };
+});
+
+// Only the browser origins listed in configuration may call the API from JavaScript.
+var allowedOrigins = builder.Configuration.GetSection(CorsOptions.SectionName).Get<CorsOptions>()?.AllowedOrigins ?? Array.Empty<string>();
+builder.Services.AddCors(options =>
+    options.AddPolicy(CorsOptions.PolicyName, policy =>
+    {
+        if (allowedOrigins.Length > 0)
+            policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+    }));
 
 var app = builder.Build();
 
@@ -176,6 +217,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors(CorsOptions.PolicyName);
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -105,6 +105,13 @@ public class GenreQueryParameters : PagingParameters, IValidatableObject
         EnumChecks.Validate(SortBy, nameof(SortBy), SortDirection);
 }
 
+public class UserQueryParameters : PagingParameters
+{
+    /// <summary>Matches email or full name.</summary>
+    [StringLength(100)]
+    public string? Search { get; set; }
+}
+
 internal static class EnumChecks
 {
     /// <summary>Query binding accepts any number for an enum (e.g. sortBy=42); reject values that aren't defined.</summary>

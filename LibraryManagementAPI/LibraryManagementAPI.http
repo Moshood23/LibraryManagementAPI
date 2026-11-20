@@ -10,6 +10,12 @@ Content-Type: application/json
 ### List books
 GET {{host}}/api/v1/Books?page=1&pageSize=20
 
+### Books from 1940 onwards with a copy on the shelf, newest publication first
+GET {{host}}/api/v1/Books?yearFrom=1940&available=true&sortBy=Year&sortDirection=Desc
+
+### Authors with the most books first
+GET {{host}}/api/v1/Authors?sortBy=BookCount&sortDirection=Desc
+
 ### Search books
 GET {{host}}/api/v1/Books/search?term=1984
 

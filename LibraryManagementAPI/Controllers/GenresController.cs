@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Models;
+using LibraryManagementAPI.Queries;
 using LibraryManagementAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,18 @@ public class GenresController : ControllerBase
 
     public GenresController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
+    /// <summary>
+    /// Lists genres one page at a time. Optional search; sort with sortBy (Name, BookCount, Newest)
+    /// and sortDirection (Asc, Desc).
+    /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<GenreReadDto>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<IEnumerable<GenreReadDto>>>> GetGenres()
+    [ProducesResponseType(typeof(ApiResponse<PagedResult<GenreReadDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<PagedResult<GenreReadDto>>>> GetGenres([FromQuery] GenreQueryParameters query)
     {
-        var genres = await _unitOfWork.Genres.GetAllWithBooksAsync();
-        return Ok(ApiResponse<IEnumerable<GenreReadDto>>.SuccessResponse(genres.Select(g => g.ToReadDto()).ToList()));
+        var (genres, total) = await _unitOfWork.Genres.GetPagedAsync(query);
+        var result = PagedResult<GenreReadDto>.Create(genres.Select(g => g.ToReadDto()), query.Page, query.PageSize, total);
+        return Ok(ApiResponse<PagedResult<GenreReadDto>>.SuccessResponse(result));
     }
 
     /// <summary>Searches genres by name or description.</summary>

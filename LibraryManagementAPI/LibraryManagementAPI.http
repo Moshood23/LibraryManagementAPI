@@ -45,3 +45,25 @@ Authorization: Bearer {{token}}
 GET {{host}}/api/v1/Loans/overdue
 Authorization: Bearer {{token}}
 
+### Get a new access token (paste the refreshToken from login)
+POST {{host}}/api/v1/Auth/refresh
+Content-Type: application/json
+
+{ "refreshToken": "paste-refresh-token-here" }
+
+### Log out
+POST {{host}}/api/v1/Auth/logout
+Content-Type: application/json
+
+{ "refreshToken": "paste-refresh-token-here" }
+
+### List users (admin)
+GET {{host}}/api/v1/Users
+Authorization: Bearer {{token}}
+
+### Promote a user to Admin (replace the id)
+PUT {{host}}/api/v1/Users/user-id-here/roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{ "roles": ["User", "Admin"] }

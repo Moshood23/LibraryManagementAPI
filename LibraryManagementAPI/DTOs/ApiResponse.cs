@@ -21,4 +21,14 @@ public class PagedResult<T>
     public int PageSize { get; set; }
     public int TotalCount { get; set; }
     public int TotalPages => PageSize == 0 ? 0 : (int)Math.Ceiling(TotalCount / (double)PageSize);
+    public bool HasPreviousPage => Page > 1;
+    public bool HasNextPage => Page < TotalPages;
+
+    public static PagedResult<T> Create(IEnumerable<T> items, int page, int pageSize, int totalCount) => new()
+    {
+        Items = items.ToList(),
+        Page = page,
+        PageSize = pageSize,
+        TotalCount = totalCount
+    };
 }

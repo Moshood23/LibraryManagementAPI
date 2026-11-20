@@ -30,9 +30,9 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 | Method | Route | Auth |
 | --- | --- | --- |
 | POST | `/api/v1/Auth/register`, `/api/v1/Auth/login` | – |
-| GET | `/api/v1/Books?page=&pageSize=`, `/api/v1/Books/{id}`, `/api/v1/Books/search?term=` | – |
-| GET | `/api/v1/Authors`, `/api/v1/Authors/{id}`, `/api/v1/Authors/search?term=` | – |
-| GET | `/api/v1/Genres`, `/api/v1/Genres/{id}`, `/api/v1/Genres/search?term=`, `/api/v1/Genres/popular?top=` | – |
+| GET | `/api/v1/Books` (filters below), `/api/v1/Books/{id}`, `/api/v1/Books/search?term=` | – |
+| GET | `/api/v1/Authors` (paged), `/api/v1/Authors/{id}`, `/api/v1/Authors/search?term=` | – |
+| GET | `/api/v1/Genres` (paged), `/api/v1/Genres/{id}`, `/api/v1/Genres/search?term=`, `/api/v1/Genres/popular?top=` | – |
 | POST / PUT / DELETE | `/api/v1/Books`, `/api/v1/Authors`, `/api/v1/Genres` | Admin |
 | POST | `/api/v1/Books/{id}/borrow` | Signed in |
 | GET | `/api/v1/Loans/me?includeReturned=`, `/api/v1/Loans/{id}` | Signed in (own loans) |
@@ -40,6 +40,26 @@ dotnet user-secrets set "SeedAdmin:Password" "<strong password>"
 | GET | `/api/v1/Loans?status=Active\|Overdue\|Returned\|All`, `/api/v1/Loans/overdue` | Admin |
 
 Deletes are soft deletes. Authors and genres that still have books can't be deleted (409).
+
+### Browsing: filters, sorting and paging
+
+`GET /api/v1/Books`, `/api/v1/Authors` and `/api/v1/Genres` return one page at a time:
+
+```json
+{ "items": [...], "page": 1, "pageSize": 20, "totalCount": 57, "totalPages": 3, "hasPreviousPage": false, "hasNextPage": true }
+```
+
+| Parameter | Books | Authors | Genres |
+| --- | --- | --- | --- |
+| `page`, `pageSize` (1–100, default 20) | ✓ | ✓ | ✓ |
+| `search` (case-insensitive) | title, ISBN, description, author, genre | first/last name, bio | name, description |
+| `authorId`, `genreId` | ✓ | | |
+| `yearFrom`, `yearTo` (inclusive) | ✓ | | |
+| `available` (`true` = a copy is on the shelf, `false` = none) | ✓ | | |
+| `sortBy` | `Title` (default), `Year`, `Author`, `Newest` | `LastName` (default), `FirstName`, `BookCount`, `Newest` | `Name` (default), `BookCount`, `Newest` |
+| `sortDirection` | `Asc` (default), `Desc` | same | same |
+
+Filters combine with AND, e.g. `/api/v1/Books?genreId=…&yearFrom=1980&available=true&sortBy=Year&sortDirection=Desc`. Invalid values (unknown `sortBy`, `yearFrom` after `yearTo`, `pageSize` over 100) return 400 with the reason.
 
 ### Lending rules
 

@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Models;
+using LibraryManagementAPI.Queries;
 using LibraryManagementAPI.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,18 @@ public class AuthorsController : ControllerBase
 
     public AuthorsController(IUnitOfWork unitOfWork) => _unitOfWork = unitOfWork;
 
+    /// <summary>
+    /// Lists authors one page at a time. Optional search; sort with sortBy (LastName, FirstName, BookCount, Newest)
+    /// and sortDirection (Asc, Desc).
+    /// </summary>
     [HttpGet]
-    [ProducesResponseType(typeof(ApiResponse<IEnumerable<AuthorReadDto>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<IEnumerable<AuthorReadDto>>>> GetAuthors()
+    [ProducesResponseType(typeof(ApiResponse<PagedResult<AuthorReadDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<PagedResult<AuthorReadDto>>>> GetAuthors([FromQuery] AuthorQueryParameters query)
     {
-        var authors = await _unitOfWork.Authors.GetAllWithBooksAsync();
-        return Ok(ApiResponse<IEnumerable<AuthorReadDto>>.SuccessResponse(authors.Select(a => a.ToReadDto()).ToList()));
+        var (authors, total) = await _unitOfWork.Authors.GetPagedAsync(query);
+        var result = PagedResult<AuthorReadDto>.Create(authors.Select(a => a.ToReadDto()), query.Page, query.PageSize, total);
+        return Ok(ApiResponse<PagedResult<AuthorReadDto>>.SuccessResponse(result));
     }
 
     /// <summary>Searches authors by first name, last name or bio.</summary>

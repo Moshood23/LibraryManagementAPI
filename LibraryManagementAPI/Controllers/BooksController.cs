@@ -1,6 +1,7 @@
 using Asp.Versioning;
 using LibraryManagementAPI.DTOs;
 using LibraryManagementAPI.Models;
+using LibraryManagementAPI.Queries;
 using System.Security.Claims;
 using LibraryManagementAPI.Repositories;
 using LibraryManagementAPI.Services;
@@ -16,7 +17,6 @@ namespace LibraryManagementAPI.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BooksController : ControllerBase
 {
-    private const int MaxPageSize = 100;
     private readonly IUnitOfWork _unitOfWork;
     private readonly ILoanService _loans;
 
@@ -26,23 +26,17 @@ public class BooksController : ControllerBase
         _loans = loans;
     }
 
-    /// <summary>Lists books, one page at a time.</summary>
+    /// <summary>
+    /// Lists books one page at a time. Optional filters (search, authorId, genreId, yearFrom, yearTo, available)
+    /// combine with AND; sort with sortBy (Title, Year, Author, Newest) and sortDirection (Asc, Desc).
+    /// </summary>
     [HttpGet]
     [ProducesResponseType(typeof(ApiResponse<PagedResult<BookReadDto>>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<ApiResponse<PagedResult<BookReadDto>>>> GetBooks(
-        [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+    [ProducesResponseType(typeof(ApiResponse<object>), StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<ApiResponse<PagedResult<BookReadDto>>>> GetBooks([FromQuery] BookQueryParameters query)
     {
-        page = Math.Max(1, page);
-        pageSize = Math.Clamp(pageSize, 1, MaxPageSize);
-
-        var (books, total) = await _unitOfWork.Books.GetPagedBooksAsync(page, pageSize);
-        var result = new PagedResult<BookReadDto>
-        {
-            Items = books.Select(b => b.ToReadDto()).ToList(),
-            Page = page,
-            PageSize = pageSize,
-            TotalCount = total
-        };
+        var (books, total) = await _unitOfWork.Books.GetPagedBooksAsync(query);
+        var result = PagedResult<BookReadDto>.Create(books.Select(b => b.ToReadDto()), query.Page, query.PageSize, total);
         return Ok(ApiResponse<PagedResult<BookReadDto>>.SuccessResponse(result));
     }
 
